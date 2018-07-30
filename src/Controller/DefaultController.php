@@ -5,54 +5,45 @@ namespace App\Controller;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request;
 use App\Entity\Product;
+use App\Form\Login;
+use App\Entity\Usuario;
+use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class DefaultController extends Controller
 {
-    /**
-     * @Route("/product", name="product")
+   /**
+     * @Route("/login", name="login_seguro" )
      */
-    public function createAction()
+    public function loginUsuario(Request $request, AuthenticationUtils $authUtils)
     {
-        $product = new Product();
-        $product->setName('prueba1');
-        $em = $this->getDoctrine()->getManager();
-        $product->setPrice('18.22');
-        $em->persist($product);
+        // Capturamos el error de autenticación
+        $error = $authUtils->getLastAuthenticationError();
+        // Último nombre de usuario autenticado
+        $lastUsername = $authUtils->getLastUsername();
+        return $this->render('security/login.html.twig', array(
+            'last_username' => $lastUsername,
+            'error'         => $error,
+        ));
+    }
+
+    /**
+     * @Route("/nuevousuario", name="usuariobd")
+     */
+    public function nuevoUsuarioBd()
+    {
+        $em=$this->getDoctrine()->getManager();
+        $usuario=new Usuario();
+        $usuario->setEmail("jorge@gm.com");
+        $usuario->setUsername("jorge");
+        $password = $this->get('security.password_encoder')
+            ->encodePassword($usuario, "Temporal");
+        $usuario->setPassword($password);
+        $em->persist($usuario);
         $em->flush();
-        return new Response('Product with id '.$product->getId().' created.');
-    }
-
-
-    /**
-     * @Route("/product/{id}", name="showProduct")
-     */
-    public function showAction($id){
-        $product=$this->getDoctrine()
-            ->getRepository(Product::class)
-            ->find($id);
-        if(!$product){
-            throw $this->createNotFoundException(
-                'No product found with id: '.$id
-            );
-        }else{
-            return new Response(dump($product));
-        }
-    }
-
-
-    /**
-     * @Route("/product/{id}/update/price/{price}", name="chanfeProductPrice")
-     */
-    public function changePrice($id,$price){
-        $em = $this->getDoctrine()->getManager();
-        $product=$this->getDoctrine()
-            ->getRepository(Product::class)
-            ->find($id);
-        $product->setPrice($price);
-        
-        return $this->redirectToRoute('showProduct', ['id'=> $id]);
+        return new Response("Usuario guardado!");
     }
 
 }
-
