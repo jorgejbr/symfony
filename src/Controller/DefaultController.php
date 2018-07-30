@@ -14,7 +14,8 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class DefaultController extends Controller
 {
-   /**
+   
+     /**
      * @Route("/login", name="login_seguro" )
      */
     public function loginUsuario(Request $request, AuthenticationUtils $authUtils)

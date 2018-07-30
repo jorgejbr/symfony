@@ -13,6 +13,13 @@
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark navbar-bg mb-5">
+   <h1 class="text-muted"> {{ 'Mi página de deportes!!' | trans }}
+           {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+              {{'Bienvenido' | trans}}
+              {{ app.user.username}}
+          {% endif %}
+   </h1>
+
     <a style="margin-left: 75px;" class="navbar-brand space-brand" href="#">Mi página de deportes</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -45,9 +52,18 @@
                     <img class="nav-profile-img rounded-circle" src="images/runner.png">
                 </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                    <a class="dropdown-item" href="#">Perfil</a>
-                    <a class="dropdown-item" href="#">Crear Post</a>
-                    <a class="dropdown-item" href="#">Logout</a>
+                     <a class="dropdown-item" href="#">{{ 'Perfil'| trans }}</a>
+		     <a class="dropdown-item" href="#">{{ 'Crear Noticia'| trans }}</a>
+     			{% if is_granted('IS_AUTHENTICATED_FULLY') %}
+             			<a class="dropdown-item" href="/deportes/logout">
+                         	{{ 'LogOut'| trans }}
+               			 </a>
+                        {% else %}
+               			<a class="dropdown-item" href="/deportes/login">
+                         {{ 'LogIn'| trans }}
+                		</a>
+  		       {% endif %}
+
                 </div>
             </li>
         </ul>
